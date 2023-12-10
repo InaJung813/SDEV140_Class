@@ -18,7 +18,6 @@ class MainFrame(EasyFrame):
         self.round_w = 0
         self.round_1 = 0
         
-
         self.background_image = PhotoImage(file="image/main_background_re.png")
         background_label = Label(self, image=self.background_image)
         background_label.place(relwidth=1, relheight=1)  # Cover the entire window
@@ -40,16 +39,56 @@ class CreatePlan(EasyFrame):
         background_label.place(x=0, y=0, relwidth=1, relheight=1)
         self.round_w = 0
         self.round_1 = 0
-            
+
 def start_create_plan():
     global create_plan_window
-    create_plan_window = Create_plan()
+    create_plan_window = CreatePlan()
     create_plan_window.grid(row=0, column=0, sticky ="NSEW")
     finish_btn = tk.Button(create_plan_window, text="Back to main", command=finish_create_plan)
     finish_btn.grid(row=0, column=0)
     
 def finish_create_plan():
     create_plan_window.grid_forget()
+
+class Spend(EasyFrame):
+     def __init__(self):
+        EasyFrame.__init__(self, title="Money Clip", height=800, width=880)
+        self.background_image = PhotoImage(file="image/budget_back.png")
+        background_label = Label(self, image=self.background_image)
+        background_label.place(x=0, y=0, relwidth=1, relheight=1)
+        self.round_w = 0
+        self.round_1 = 0
+
+def start_spend():
+    global spend_window
+    spend_window = Spend()
+    spend_window.grid(row=0, column=0, sticky ="NSEW")
+    finish_btn = tk.Button(spend_window, text="Back to main", command=finish_spend)
+    finish_btn.grid(row=0, column=0)
+
+def finish_spend():
+    spend_window.grid_forget()
+
+class CheckStatus(EasyFrame):
+    def __init__(self):
+        EasyFrame.__init__(self, title="Money Clip", height=800, width=880)
+        self.background_image = PhotoImage(file="image/budget_back.png")
+        background_label = Label(self, image=self.background_image)
+        background_label.place(x=0, y=0, relwidth=1, relheight=1)
+        self.round_w = 0
+        self.round_1 = 0
+
+def start_check_status():
+    global check_status_window
+    check_status_window = CheckStatus()
+    check_status_window.grid(row=0, column=0, sticky ="NSEW")
+    finish_btn = tk.Button(check_status_window, text="Back to main", command=finish_check_status)
+    finish_btn.grid(row=0, column=0)
+
+def finish_check_status():
+    check_status_window.grid_forget()
+
+
 
 def input_spending():
         pass
@@ -76,12 +115,8 @@ def main() :
 
     # Create the buttons
     plan_button = Button(main_window, image=plan_button_img, borderwidth=0, highlightthickness=0, command=start_create_plan)
-    spend_button = Button(main_window, image=spend_button_img, borderwidth=0, highlightthickness=0, command=input_spending)
-    status_button = Button(main_window, image=status_button_img, borderwidth=0, highlightthickness=0, command=check_status)
-
-    # Associate the start_btn with the main window    
-    start_btn = tk.Button(main_window, text="Start Match", command=start_match)
-    start_btn.grid(row=0, column=0)
+    spend_button = Button(main_window, image=spend_button_img, borderwidth=0, highlightthickness=0, command=start_spend)
+    status_button = Button(main_window, image=status_button_img, borderwidth=0, highlightthickness=0, command=start_check_status)
 
 
     # Place the buttons on the screen
