@@ -34,7 +34,8 @@ class Plan():
         self.spendings.append(spending)
 
     def __str__(self):
-        return "Plan: {}, Amount: {}, Start Date: {}, End Date: {}".format(self.name, self.amount, self.start_date, self.end_date)
+        # return "Plan: {}, Amount: {}, Start Date: {}, End Date: {}".format(self.name, self.amount, self.start_date, self.end_date) as YYYY-MM-DD
+        return "Plan: {}, Amount: {}, Start Date: {}, End Date: {}".format(self.name, self.amount, self.start_date.strftime("%Y-%m-%d"), self.end_date.strftime("%Y-%m-%d"))
 
 class Spending():
     def __init__(self, name, amount, date):
@@ -53,7 +54,8 @@ class Spending():
         return self.date
 
     def __str__(self):
-        return "Spending: {}, Amount: {}, Date: {}".format(self.name, self.amount, self.date)
+        # return "Spending: {}, Amount: {}, Date: {}".format(self.name, self.amount, self.date) as YYYY-MM-DD 
+        return "Spending: {}, Amount: {}, Date: {}".format(self.name, self.amount, self.date.strftime("%Y-%m-%d"))
      
 
 class MainFrame(EasyFrame):
@@ -73,6 +75,7 @@ class MainFrame(EasyFrame):
         background_label.place(relwidth=1, relheight=1)  # Cover the entire window
         money_clip_label = Label(self, text="Money Clip", font=("Arial", 40), fg="#385492", bg="#7FE7FE")
         money_clip_label.place(x=350, y=10)
+        
 
     def start_create_plan(self):
         create_plan_window = CreatePlan()
@@ -150,6 +153,10 @@ class CreateNewPlan(EasyFrame):
         self.addButton(text="Cancel", row=0, column=10, command=self.cancel_new_plan).place(x=400, y=350)
         self.addButton(text="Finish", row=0, column=0, command=self.finish_add_new_plan).place(x=0, y=0)
 
+        # add finish button
+        finish_btn = tk.Button(self, text="Finish", command=self.finish_add_new_plan)
+        finish_btn.grid(row=0, column=0)
+
     def create_new_plan(self):
         # get the input
         plan_name = self.plan_name.getText()
@@ -205,9 +212,96 @@ class ChangePlan(EasyFrame):
         background_label.place(x=0, y=0, relwidth=1, relheight=1)
         self.round_w = 0
         self.round_1 = 0
-        # add finish button
-        finish_btn = tk.Button(self, text="Finish", command=self.finish_change_plan)
-        finish_btn.grid(row=0, column=0)
+
+        # add TextBox in certer of the screen
+        self.addLabel(text="Change Plan", row=0, column=10, font=("Arial", 30) ).place(x=300, y=10)
+        self.addLabel(text="New Plan", row=0, column=10, font=("Arial", 30) ).place(x=350, y=70)
+
+        # add labels and textboxs
+        self.addLabel(text="Plan Name", row=0, column=10, font=("Arial", 15) ).place(x=100, y=150)
+        self.plan_name = self.addTextField(text="", row=0, column=10, width=40)
+        self.plan_name.place(x=300, y=150)
+        self.addLabel(text="Budget Amount", row=0, column=10, font=("Arial", 15) ).place(x=100, y=200)
+        self.plan_amount = self.addTextField(text="", row=0, column=10, width=40)
+        self.plan_amount.place(x=300, y=200)
+        self.addLabel(text="Start Date", row=0, column=10, font=("Arial", 15) ).place(x=100, y=250)
+        self.plan_start_date = self.addTextField(text="", row=0, column=10, width=40)
+        self.plan_start_date.place(x=300, y=250)
+        self.addLabel(text="End Date", row=0, column=10, font=("Arial", 15) ).place(x=100, y=300)
+        self.plan_end_date = self.addTextField(text="", row=0, column=10, width=40)
+        self.plan_end_date.place(x=300, y=300)
+
+
+        # add Plans drop down list
+        self.listbox = tk.Listbox(self, width=50, height=10, selectmode=tk.SINGLE)
+        self.listbox.place(x=300, y=400)
+        # insert plans into the listbox
+        for i in range(len(plans)):
+            plan = plans[i]
+            self.listbox.insert(i, plan.get_name())
+
+        # add Buttons
+        self.addButton(text="Change", row=0, column=10, command=self.change_plan).place(x=300, y=350)
+        self.addButton(text="Cancel", row=0, column=10, command=self.cancel_change_plan).place(x=400, y=350)
+        self.addButton(text="Finish", row=0, column=0, command=self.finish_change_plan).place(x=0, y=0)
+
+    def change_plan(self):
+        # get the input
+        plan_name = self.plan_name.getText()
+        plan_amount = self.plan_amount.getText()
+        plan_start_date = self.plan_start_date.getText()
+        plan_end_date = self.plan_end_date.getText()
+
+        # check if the input is valid
+        if plan_name == "" or plan_amount == "" or plan_start_date == "" or plan_end_date == "":
+            messagebox.showinfo("Change Plan", "Please fill in all the blanks!")
+            return
+        # check if the date is valid
+        date_format = "%Y-%m-%d"
+        try:
+            dt.strptime( plan_start_date, date_format )
+            dt.strptime( plan_end_date, date_format )
+        except ValueError:
+            messagebox.showinfo("Change Plan", "Please enter date in the format YYYY-MM-DD!")
+            return
+        if plan_start_date > plan_end_date:
+            messagebox.showinfo("Change Plan", "Start date should be earlier than end date!")
+            return
+        if float(plan_amount) < 0:
+            messagebox.showinfo("Change Plan", "Amount should be positive!")
+            return
+        
+        # get the selected plan
+        selected_plan_index = self.listbox.curselection()
+        if len(selected_plan_index) == 0:
+            messagebox.showinfo("Change Plan", "Please select a plan!")
+            return
+        selected_plan_index = selected_plan_index[0]
+        selected_plan = plans[selected_plan_index]
+
+        # change the plan
+        selected_plan.name = plan_name
+        selected_plan.amount = plan_amount
+        selected_plan.start_date = plan_start_date
+        selected_plan.end_date = plan_end_date
+
+        # clear the input
+        self.plan_name.setText("")
+        self.plan_amount.setText("")
+        self.plan_start_date.setText("")
+        self.plan_end_date.setText("")
+        messagebox.showinfo("Change Plan", "Change Plan Successfully!")
+
+    def cancel_change_plan(self):
+        self.plan_name.setText("")
+        self.plan_amount.setText("")
+        self.plan_start_date.setText("")
+        self.plan_end_date.setText("")
+        messagebox.showinfo("Change Plan", "Cancel Change Plan Successfully!")
+    
+
+    
+        
 
     def finish_change_plan(self):
         self.grid_forget()
@@ -306,7 +400,7 @@ class Spend(EasyFrame):
         messagebox.showinfo("Spend", "Cancel Successfully!")
 
     def finish_spend(self):
-        self.grid_forget()
+        self.grid_forget()    
 
 
 def start_spend():
@@ -394,11 +488,61 @@ def start_check_status():
     global check_status_window
     check_status_window = CheckStatus()
     check_status_window.grid(row=0, column=0, sticky ="NSEW")
-    
+
+def finish_main_window():
+    # save the data to file
+    with open(save_file_name, "w") as f:
+        for plan in plans:
+            f.write(str(plan) + "\n")
+            for spending in plan.get_spendings():
+                f.write(str(spending) + "\n")
+            f.write("\n")
+
+    # close the window
+    root.destroy()
+
+def save_to_file():
+    with open(save_file_name, "w") as f:
+        for plan in plans:
+            f.write(str(plan) + "\n")
+            for spending in plan.get_spendings():
+                f.write(str(spending) + "\n")
+            f.write("\n")
+
+def load_from_file():
+    with open(save_file_name, "r") as f:
+        lines = f.readlines()
+        i = 0
+        while i < len(lines):
+            line = lines[i]
+            if line.startswith("Plan"):
+                plan_name = line.split(",")[0].split(":")[1].strip()
+                plan_amount = line.split(",")[1].split(":")[1].strip()
+                plan_start_date = line.split(",")[2].split(":")[1].strip()
+                plan_end_date = line.split(",")[3].split(":")[1].strip()
+                print( f"plan_name: {plan_name}, plan_amount: {plan_amount}, plan_start_date: {plan_start_date}, plan_end_date: {plan_end_date}")
+                new_plan = Plan(plan_name, plan_amount, plan_start_date, plan_end_date)
+                plans.append(new_plan)
+                i += 1
+                line = lines[i]
+                while line.startswith("Spending"):
+                    spending_name = line.split(",")[0].split(":")[1].strip()
+                    spending_amount = line.split(",")[1].split(":")[1].strip()
+                    spending_date = line.split(",")[2].split(":")[1].strip()
+                    new_spending = Spending(spending_name, spending_amount, spending_date)
+                    new_plan.add_spendings(new_spending)
+                    i += 1
+                    line = lines[i]
+                i -= 1
+            i += 1
 
 
 def main() :
     # Create the main window
+    global root
+    global save_file_name
+
+    save_file_name = "plans.txt"
     root = tk.Tk()
     main_window = MainFrame()
     main_window.grid(row=0, column=0)
@@ -419,14 +563,17 @@ def main() :
     status_button.place(x=36, y=405)
 
     # add finish button
-    finish_btn = tk.Button(main_window, text="Finish", command=root.destroy)
+    finish_btn = tk.Button(main_window, text="Finish", command=finish_main_window)
     finish_btn.grid(row=0, column=0)
 
     global plans
     plans = list()
 
     # add test data
-    add_test_data()
+    #add_test_data()
+
+    # load data from file
+    load_from_file()
 
     # Start the GUI
     root.mainloop()
