@@ -226,11 +226,30 @@ class CheckStatus(EasyFrame):
         background_label.place(x=0, y=0, relwidth=1, relheight=1)
         self.round_w = 0
         self.round_1 = 0
-        self.listbox = None
+
+        # add Plans drop down list
+        self.addLabel(text="Plans", row=0, column=10, font=("Arial", 15) ).place(x=100, y=100)
+        self.listbox = tk.Listbox(self, width=50, height=10, selectmode=tk.SINGLE)
+        self.listbox.place(x=300, y=100)
+        # insert plans into the listbox
+        for i in range(len(plans)):
+            plan = plans[i]
+            self.listbox.insert(i, plan.get_name())
+
+        # add Summary report button
+        self.addButton(text="Summary Report", row=0, column=10, command=self.summary_report).place(x=300, y=300)
+        # add Spending report button
+        self.addButton(text="Spending Report", row=0, column=10, command=self.spending_report).place(x=500, y=300)
 
         # add finish button
         finish_btn = tk.Button(self, text="Finish", command=self.finish_check_status)
         finish_btn.grid(row=0, column=0)
+
+    def summary_report(self):
+        pass
+
+    def spending_report(self):
+        pass
 
     def finish_check_status(self):
         self.grid_forget()
@@ -240,16 +259,6 @@ def start_check_status():
     check_status_window = CheckStatus()
     check_status_window.grid(row=0, column=0, sticky ="NSEW")
     
-    # add Plans drop down list
-    check_status_window.addLabel(text="Plans", row=0, column=10, font=("Arial", 15) ).place(x=100, y=100)
-    check_status_window.listbox = check_status_window.addListbox(row=0, column=10, width=40, height=10)
-    check_status_window.listbox.place(x=300, y=100)
-
-    # insert plans into the listbox
-    for i in range(len(plans)):
-        plan = plans[i]
-        check_status_window.listbox.insert(i, plan.get_name())
-
 
 
 def main() :
