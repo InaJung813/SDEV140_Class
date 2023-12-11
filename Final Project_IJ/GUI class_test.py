@@ -36,6 +36,26 @@ class Plan():
     def __str__(self):
         return "Plan: {}, Amount: {}, Start Date: {}, End Date: {}".format(self.name, self.amount, self.start_date, self.end_date)
 
+class Spending():
+    def __init__(self, name, amount, date):
+        date_format = "%Y-%m-%d"
+        self.name = str(name)
+        self.amount = float(amount)
+        self.date = dt.strptime( date, date_format )
+
+    def get_name(self):
+        return self.name
+
+    def get_amount(self):
+        return self.amount
+
+    def get_date(self):
+        return self.date
+
+    def __str__(self):
+        return "Spending: {}, Amount: {}, Date: {}".format(self.name, self.amount, self.date)
+     
+
 class MainFrame(EasyFrame):
 
     def __init__(self):
@@ -201,15 +221,93 @@ class Spend(EasyFrame):
         background_label.place(x=0, y=0, relwidth=1, relheight=1)
         self.round_w = 0
         self.round_1 = 0
+
+        # add TextBox in certer of the screen
+        self.addLabel(text="Spend", row=0, column=10, font=("Arial", 30) ).place(x=300, y=10)
+        self.addLabel(text="New Spending", row=0, column=10, font=("Arial", 30) ).place(x=350, y=70)
+
+        # add labels and textboxs
+        self.addLabel(text="Spending Name", row=0, column=10, font=("Arial", 15) ).place(x=100, y=150)
+        self.spending_name = self.addTextField(text="", row=0, column=10, width=40)
+        self.spending_name.place(x=300, y=150)
+        self.addLabel(text="Spending Amount", row=0, column=10, font=("Arial", 15) ).place(x=100, y=200)
+        self.spending_amount = self.addTextField(text="", row=0, column=10, width=40)
+        self.spending_amount.place(x=300, y=200)
+        self.addLabel(text="Spending Date", row=0, column=10, font=("Arial", 15) ).place(x=100, y=250)
+        self.spending_date = self.addTextField(text="", row=0, column=10, width=40)
+        self.spending_date.place(x=300, y=250)
+
+        # add Plans drop down list
+        self.addLabel(text="Plans", row=0, column=10, font=("Arial", 15) ).place(x=100, y=100)
+        self.listbox = tk.Listbox(self, width=50, height=15, selectmode=tk.SINGLE)
+        self.listbox.place(x=300, y=400)
+        # insert plans into the listbox
+        for i in range(len(plans)):
+            plan = plans[i]
+            self.listbox.insert(i, plan.get_name())
+
+        # add Buttons
+        self.addButton(text="Spend", row=0, column=10, command=self.spend).place(x=300, y=300)
+        self.addButton(text="Cancel", row=0, column=10, command=self.cancel_spend).place(x=400, y=300)
+        self.addButton(text="Finish", row=0, column=0, command=self.finish_spend).place(x=0, y=0)
+
         # add finish button
         finish_btn = tk.Button(self, text="Finish", command=self.finish_spend)
         finish_btn.grid(row=0, column=0)
 
-    def finish_spend():
-        spend_window.grid_forget()
+    def spend(self):
+        # get the input
+        spending_name = self.spending_name.getText()
+        spending_amount = self.spending_amount.getText()
+        spending_date = self.spending_date.getText()
 
-    def input_spending():
-        pass
+        # check if the input is valid
+        if spending_name == "" or spending_amount == "" or spending_date == "":
+            messagebox.showinfo("Spend", "Please fill in all the blanks!")
+            return
+        # check if the date is valid
+        date_format = "%Y-%m-%d"
+        try:
+            spending_date_check = dt.strptime( spending_date, date_format )
+        except ValueError:
+            messagebox.showinfo("Spend", "Please enter date in the format YYYY-MM-DD!")
+            return
+        if float(spending_amount) < 0:
+            messagebox.showinfo("Spend", "Amount should be positive!")
+            return
+        
+        # get the selected plan
+        selected_plan_index = self.listbox.curselection()
+        if len(selected_plan_index) == 0:
+            messagebox.showinfo("Spend", "Please select a plan!")
+            return
+        selected_plan_index = selected_plan_index[0]
+        selected_plan = plans[selected_plan_index]
+
+        # check if the spending date is in the plan
+        if not selected_plan.get_start_date() <= spending_date_check <= selected_plan.get_end_date():
+            messagebox.showinfo("Spend", "Spending date should be in the plan!")
+            return
+                
+        # create new spending
+        new_spending = Spending(spending_name, spending_amount, spending_date)
+        selected_plan.add_spendings(new_spending)
+
+        # clear the input
+        self.spending_name.setText("")
+        self.spending_amount.setText("")
+        self.spending_date.setText("")
+        messagebox.showinfo("Spend", "Spend Successfully!")
+
+    def cancel_spend(self):
+        self.spending_name.setText("")
+        self.spending_amount.setText("")
+        self.spending_date.setText("")
+        messagebox.showinfo("Spend", "Cancel Successfully!")
+
+    def finish_spend(self):
+        self.grid_forget()
+
 
 def start_spend():
     global spend_window
@@ -246,10 +344,48 @@ class CheckStatus(EasyFrame):
         finish_btn.grid(row=0, column=0)
 
     def summary_report(self):
-        pass
+        # get the selected plan
+        selected_plan_index = self.listbox.curselection()
+        if len(selected_plan_index) == 0:
+            messagebox.showinfo("Summary Report", "Please select a plan!")
+            return
+        selected_plan_index = selected_plan_index[0]
+        selected_plan = plans[selected_plan_index]
+
+        # get the budget amount
+        budget_amount = selected_plan.get_amount()
+
+        # get the total amount of spending
+        total_spending = 0
+        for spending in selected_plan.get_spendings():
+            total_spending += spending.get_amount()
+
+        # get the remaining amount
+        remaining_amount = selected_plan.get_amount() - total_spending
+
+        # show the summary report
+        messagebox.showinfo("Summary Report", "Budget Amount: {}\nTotal Spending: {}\nRemaining Amount: {}".format(budget_amount, total_spending, remaining_amount))
 
     def spending_report(self):
-        pass
+        # get the selected plan
+        selected_plan_index = self.listbox.curselection()
+        if len(selected_plan_index) == 0:
+            messagebox.showinfo("Spending Report", "Please select a plan!")
+            return
+        selected_plan_index = selected_plan_index[0]
+        selected_plan = plans[selected_plan_index]
+        
+        # get the total amount of spending
+        total_spending = 0
+        for spending in selected_plan.get_spendings():
+            total_spending += spending.get_amount()
+
+        # show the spending details
+        spending_details = ""
+        for spending in selected_plan.get_spendings():
+            spending_details += "{}: {}\n".format(spending.get_name(), spending.get_amount())
+        spending_details += "Total Spending: {}".format(total_spending)
+        messagebox.showinfo("Spending Report", spending_details)
 
     def finish_check_status(self):
         self.grid_forget()
@@ -289,8 +425,46 @@ def main() :
     global plans
     plans = list()
 
+    # add test data
+    add_test_data()
+
     # Start the GUI
     root.mainloop()
+
+def add_test_data():
+    plan1 = Plan("plan1", 100, "2023-01-01", "2023-01-31")
+
+    # add test data
+    spending1 = Spending("spending1", 10, "2023-01-01")
+    spending2 = Spending("spending2", 20, "2023-01-02")
+    spending3 = Spending("spending3", 30, "2023-01-03")
+    plan1.add_spendings(spending1)
+    plan1.add_spendings(spending2)
+    plan1.add_spendings(spending3)
+
+    plan2 = Plan("plan2", 200, "2023-02-01", "2023-02-28")
+
+    # add test data
+    spending4 = Spending("spending4", 40, "2023-02-01")
+    spending5 = Spending("spending5", 50, "2023-02-02")
+    spending6 = Spending("spending6", 60, "2023-02-03")
+    plan2.add_spendings(spending4)
+    plan2.add_spendings(spending5)
+    plan2.add_spendings(spending6)
+
+    plan3 = Plan("plan3", 300, "2023-03-01", "2023-03-31")
+
+    # add test data
+    spending7 = Spending("spending7", 70, "2023-03-01")
+    spending8 = Spending("spending8", 80, "2023-03-02")
+    spending9 = Spending("spending9", 90, "2023-03-03")
+    plan3.add_spendings(spending7)
+    plan3.add_spendings(spending8)
+    plan3.add_spendings(spending9)
+
+    plans.append(plan1)
+    plans.append(plan2)
+    plans.append(plan3)
 
 
 if __name__ == "__main__":
