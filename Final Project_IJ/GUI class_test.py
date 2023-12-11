@@ -3,13 +3,18 @@ import tkinter as tk
 from breezypythongui import EasyFrame
 from tkinter import PhotoImage, Label, Button, StringVar, DoubleVar, messagebox
 
+import json
+from datetime import datetime as dt
+
 
 class Plan():
     def __init__(self, name, amount, start_date, end_date):
-        self.name = name
-        self.amount = amount
-        self.start_date = start_date
-        self.end_date = end_date
+        date_format = "%Y-%m-%d"
+        self.name = str(name)
+        self.amount = float(amount)
+        self.start_date = dt.strptime( start_date, date_format ) 
+        self.end_date = dt.strptime( end_date, date_format )
+
         self.spendings = list()
 
     def get_name(self):
@@ -128,11 +133,37 @@ class CreateNewPlan(EasyFrame):
         self.addButton(text="Finish", row=0, column=0, command=self.finish_add_new_plan).place(x=0, y=0)
 
     def create_new_plan(self):
+        # get the input
         plan_name = self.plan_name.getText()
         plan_amount = self.plan_amount.getText()
         plan_start_date = self.plan_start_date.getText()
-        plan_end_date = self.plan_end_date.getText()
-        print(plan_name, plan_amount, plan_start_date, plan_end_date)
+        plan_end_date = self.plan_end_date.getText() 
+
+        # check if the input is valid
+        if plan_name == "" or plan_amount == "" or plan_start_date == "" or plan_end_date == "":
+            messagebox.showinfo("Create New Plan", "Please fill in all the blanks!")
+            return
+        # check if the date is valid
+        date_format = "%Y-%m-%d"
+        try:
+            dt.strptime( plan_start_date, date_format )
+            dt.strptime( plan_end_date, date_format ) 
+        except ValueError:
+            messagebox.showinfo("Create New Plan", "Please enter date in the format YYYY-MM-DD!")
+            return
+        if plan_start_date > plan_end_date:
+            messagebox.showinfo("Create New Plan", "Start date should be earlier than end date!")
+            return
+        if float(plan_amount) < 0:
+            messagebox.showinfo("Create New Plan", "Amount should be positive!")
+            return
+        
+        # create new plan
+        new_plan = Plan(plan_name, plan_amount, plan_start_date, plan_end_date)
+        plans.append(new_plan)
+        print(str(new_plan))
+
+        # clear the input
         self.plan_name.setText("")
         self.plan_amount.setText("")
         self.plan_start_date.setText("")
@@ -145,9 +176,6 @@ class CreateNewPlan(EasyFrame):
         self.plan_start_date.setText("")
         self.plan_end_date.setText("")
         messagebox.showinfo("Create New Plan", "Cancel New Plan Successfully!")
-
-
-                                                                                               
 
     def finish_add_new_plan(self):
         self.grid_forget()
@@ -243,6 +271,7 @@ def main() :
     finish_btn = tk.Button(main_window, text="Finish", command=root.destroy)
     finish_btn.grid(row=0, column=0)
 
+    global plans
     plans = list()
 
     # Start the GUI
