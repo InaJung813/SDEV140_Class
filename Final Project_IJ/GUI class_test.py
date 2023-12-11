@@ -2,8 +2,6 @@ from breezypythongui import EasyFrame
 import tkinter as tk
 from breezypythongui import EasyFrame
 from tkinter import PhotoImage, Label, Button, StringVar, DoubleVar, messagebox
-
-import json
 from datetime import datetime as dt
 
 
@@ -161,7 +159,6 @@ class CreateNewPlan(EasyFrame):
         # create new plan
         new_plan = Plan(plan_name, plan_amount, plan_start_date, plan_end_date)
         plans.append(new_plan)
-        print(str(new_plan))
 
         # clear the input
         self.plan_name.setText("")
@@ -229,6 +226,8 @@ class CheckStatus(EasyFrame):
         background_label.place(x=0, y=0, relwidth=1, relheight=1)
         self.round_w = 0
         self.round_1 = 0
+        self.listbox = None
+
         # add finish button
         finish_btn = tk.Button(self, text="Finish", command=self.finish_check_status)
         finish_btn.grid(row=0, column=0)
@@ -240,11 +239,18 @@ def start_check_status():
     global check_status_window
     check_status_window = CheckStatus()
     check_status_window.grid(row=0, column=0, sticky ="NSEW")
-    finish_btn = tk.Button(check_status_window, text="Back to main", command=finish_check_status)
-    finish_btn.grid(row=0, column=0)
+    
+    # add Plans drop down list
+    check_status_window.addLabel(text="Plans", row=0, column=10, font=("Arial", 15) ).place(x=100, y=100)
+    check_status_window.listbox = check_status_window.addListbox(row=0, column=10, width=40, height=10)
+    check_status_window.listbox.place(x=300, y=100)
 
-    def check_status():
-        pass
+    # insert plans into the listbox
+    for i in range(len(plans)):
+        plan = plans[i]
+        check_status_window.listbox.insert(i, plan.get_name())
+
+
 
 def main() :
     # Create the main window
