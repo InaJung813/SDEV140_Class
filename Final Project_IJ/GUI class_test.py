@@ -491,13 +491,7 @@ def start_check_status():
 
 def finish_main_window():
     # save the data to file
-    with open(save_file_name, "w") as f:
-        for plan in plans:
-            f.write(str(plan) + "\n")
-            for spending in plan.get_spendings():
-                f.write(str(spending) + "\n")
-            f.write("\n")
-
+    save_to_file()
     # close the window
     root.destroy()
 
