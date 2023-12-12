@@ -171,31 +171,28 @@ class CreateNewPlan(EasyFrame):
         self.round_1 = 0
         
         # add TextBox in certer of the screen
-        self.addLabel(text="Create New Plan", row=0, column=10, font=("Arial", 30) ).place(x=300, y=10)
-        self.addLabel(text="New Plan", row=0, column=10, font=("Arial", 30) ).place(x=350, y=70)
+        self.addLabel(text="Create New Plan", row=0, column=10, font=("Arial", 45), background = "#F7F5F7" ).place(x=300, y=10)
 
         # add labels and textboxs
-        self.addLabel(text="Plan Name", row=0, column=10, font=("Arial", 15) ).place(x=100, y=150)
+        self.addLabel(text="Plan Name", row=0, column=10, font=("Arial", 15), background = "#F7F5F7" ).place(x=100, y=150)
         self.plan_name = self.addTextField(text="", row=0, column=10, width=40)
         self.plan_name.place(x=300, y=150)
-        self.addLabel(text="Budget Amount", row=0, column=10, font=("Arial", 15) ).place(x=100, y=200)
+        self.addLabel(text="Budget Amount", row=0, column=10, font=("Arial", 15), background = "#F7F5F7" ).place(x=100, y=200)
         self.plan_amount = self.addTextField(text="", row=0, column=10, width=40)
         self.plan_amount.place(x=300, y=200)
-        self.addLabel(text="Start Date", row=0, column=10, font=("Arial", 15) ).place(x=100, y=250)
+        self.addLabel(text="Start Date", row=0, column=10, font=("Arial", 15), background = "#F7F5F7" ).place(x=100, y=250)
         self.plan_start_date = self.addTextField(text="", row=0, column=10, width=40)
         self.plan_start_date.place(x=300, y=250)
-        self.addLabel(text="End Date", row=0, column=10, font=("Arial", 15) ).place(x=100, y=300)
+        self.addLabel(text="End Date", row=0, column=10, font=("Arial", 15), background = "#F7F5F7" ).place(x=100, y=300)
         self.plan_end_date = self.addTextField(text="", row=0, column=10, width=40)
         self.plan_end_date.place(x=300, y=300)
 
         # add Buttons
-        self.addButton(text="Create", row=0, column=10, command=self.create_new_plan).place(x=300, y=350)
-        self.addButton(text="Cancel", row=0, column=10, command=self.cancel_new_plan).place(x=400, y=350)
-        self.addButton(text="Finish", row=0, column=0, command=self.finish_add_new_plan).place(x=0, y=0)
+        self.addButton(text="Create", row=0, column=10, height= 3, width= 5 ,command=self.create_new_plan).place(x=300, y=350)
+        self.addButton(text="Cancel", row=0, column=10, height= 3, width= 5 ,command=self.cancel_new_plan).place(x=500, y=350)
 
         # add finish button
-        finish_btn = tk.Button(self, text="Finish", command=self.finish_add_new_plan)
-        finish_btn.grid(row=0, column=0)
+        self.addButton(text="Back \nto Main", row=0, column=0, height=3, width=5, command=self.finish_add_new_plan).place(x=30, y=0)
 
     def create_new_plan(self):
         # get the input
@@ -378,7 +375,6 @@ class Spend(EasyFrame):
         # add Buttons
         self.addButton(text="Spend", row=0, column=10, command=self.spend).place(x=300, y=300)
         self.addButton(text="Cancel", row=0, column=10, command=self.cancel_spend).place(x=400, y=300)
-        #self.addButton(text="Finish", row=0, column=0, command=self.finish_spend).place(x=0, y=0)
         self.addButton(text="Back \nto Main", row=0, column=0, height=3, width=5, command=self.finish_spend).place(x=30, y=0)
 
 
