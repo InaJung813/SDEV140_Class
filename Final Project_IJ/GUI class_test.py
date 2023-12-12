@@ -177,15 +177,26 @@ class CreateNewPlan(EasyFrame):
         self.addLabel(text="Plan Name", row=0, column=10, font=("Arial", 15), background = "#F7F5F7" ).place(x=100, y=150)
         self.plan_name = self.addTextField(text="", row=0, column=10, width=40)
         self.plan_name.place(x=300, y=150)
+        self.plan_name.setText("Enter your plan name")
+        self.plan_name.bind("<FocusIn>", self.on_entry_click)
+        
         self.addLabel(text="Budget Amount", row=0, column=10, font=("Arial", 15), background = "#F7F5F7" ).place(x=100, y=200)
         self.plan_amount = self.addTextField(text="", row=0, column=10, width=40)
         self.plan_amount.place(x=300, y=200)
+        self.plan_amount.setText("Enter the plan budget amount")
+        self.plan_amount.bind("<FocusIn>", self.on_entry_click)
+        
         self.addLabel(text="Start Date", row=0, column=10, font=("Arial", 15), background = "#F7F5F7" ).place(x=100, y=250)
         self.plan_start_date = self.addTextField(text="", row=0, column=10, width=40)
         self.plan_start_date.place(x=300, y=250)
+        self.plan_start_date.setText("YYYY-MM-DD")
+        self.plan_start_date.bind("<FocusIn>", self.on_entry_click)
+        
         self.addLabel(text="End Date", row=0, column=10, font=("Arial", 15), background = "#F7F5F7" ).place(x=100, y=300)
         self.plan_end_date = self.addTextField(text="", row=0, column=10, width=40)
         self.plan_end_date.place(x=300, y=300)
+        self.plan_end_date.setText("YYYY-MM-DD")
+        self.plan_end_date.bind("<FocusIn>", self.on_entry_click)
 
         # add Buttons
         self.addButton(text="Create", row=0, column=10, height= 3, width= 5 ,command=self.create_new_plan).place(x=300, y=350)
@@ -194,6 +205,31 @@ class CreateNewPlan(EasyFrame):
         # add finish button
         self.addButton(text="Back \nto Main", row=0, column=0, height=3, width=5, command=self.finish_add_new_plan).place(x=30, y=0)
 
+        self.plan_name.bind("<FocusOut>", self.on_focusout)
+        self.plan_amount.bind("<FocusOut>", self.on_focusout)
+        self.plan_start_date.bind("<FocusOut>", self.on_focusout)
+        self.plan_end_date.bind("<FocusOut>", self.on_focusout)
+        
+    def on_entry_click(self, event):
+        """Event handler: executed when the user clicks on a text field."""
+        current_text = event.widget.getText()
+        if current_text == "YYYY-MM-DD" or current_text == "Enter your plan name" or current_text == "Enter the plan budget amount":
+            event.widget.setText("")
+            event.widget["foreground"] = "black"
+
+
+    def on_focusout(self, event):
+        """Event handler: executed when a text field loses focus."""
+        if event.widget == self.plan_name and event.widget.getText() == "":
+            event.widget.setText("Enter your plan name")
+            event.widget["foreground"] = "grey"
+        elif event.widget == self.plan_amount and event.widget.getText() == "":
+            event.widget.setText("Enter the plan budget amount")
+            event.widget["foreground"] = "grey"
+        elif (event.widget == self.plan_start_date or event.widget == self.plan_end_date) and event.widget.getText() == "":
+            event.widget.setText("YYYY-MM-DD")
+            event.widget["foreground"] = "grey"
+            
     def create_new_plan(self):
         # get the input
         plan_name = self.plan_name.getText()
