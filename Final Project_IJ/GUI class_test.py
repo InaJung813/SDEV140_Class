@@ -4,6 +4,77 @@ from breezypythongui import EasyFrame
 from tkinter import PhotoImage, Label, Button, StringVar, DoubleVar, messagebox
 from datetime import datetime as dt
 
+# Setting the background, buttons for the main page
+class MainFrame(EasyFrame):
+
+    def __init__(self):
+        EasyFrame.__init__(self, title="Money Clip", height=800, width=880)
+        
+        # Configuring menu buttons and setting their background
+        money_clip_label = self.addLabel("Money Clip", row=0, column=1,columnspan = 2)
+        money_clip_label["font"] = ("Arial", 45)
+        money_clip_label["foreground"] = "#385492"
+        money_clip_label["background"] = "#7FE7FE"
+        money_clip_label.place(x=350, y=10)
+        self.round_w = 0
+        self.round_1 = 0
+        self.background_image = PhotoImage(file="image/main_background_re.png")
+        background_label = Label(self, image=self.background_image)
+        background_label.place(relwidth=1, relheight=1)  # Cover the entire window
+        money_clip_label = Label(self, text="Money Clip", font=("Arial", 40), fg="#385492", bg="#7FE7FE")
+        money_clip_label.place(x=350, y=10)
+        
+     # Linking each button to its respective function/module
+    def start_create_plan(self):
+        create_plan_window = CreatePlan()
+        create_plan_window.grid(row=0, column=0, sticky ="NSEW")
+
+    def start_spend(self):
+        spend_window = Spend()
+        spend_window.grid(row=0, column=0, sticky ="NSEW")
+
+    def start_check_status(self):
+        check_status_window = CheckStatus()
+        check_status_window.grid(row=0, column=0, sticky ="NSEW")
+        
+# Create the main window        
+def main() :
+    global root
+    global save_file_name
+
+    save_file_name = "plans.txt"
+    root = tk.Tk()
+    main_window = MainFrame()
+    main_window.grid(row=0, column=0)
+
+    # Setting the position of buttons on the screen
+    plan_button_img = PhotoImage(file="image/Botton1.png")
+    spend_button_img = PhotoImage(file="image/Botton2.png")
+    status_button_img = PhotoImage(file="image/Botton3.png")
+
+    # Create the buttons
+    plan_button = Button(main_window, image=plan_button_img, borderwidth=0, highlightthickness=0, command=start_create_plan)
+    spend_button = Button(main_window, image=spend_button_img, borderwidth=0, highlightthickness=0, command=start_spend)
+    status_button = Button(main_window, image=status_button_img, borderwidth=0, highlightthickness=0, command=start_check_status)
+
+    # Place the buttons on the screen
+    plan_button.place(x=83, y=13)
+    spend_button.place(x=492, y=219)
+    status_button.place(x=52, y=413)
+
+    # add finish button
+    finish_btn = tk.Button(main_window, text="Finish", height= 3, width= 5 , command=finish_main_window, fg="#385492", bg="#7FE7FE")
+    finish_btn.place(x=750, y=0)
+
+    global plans
+    plans = list()
+
+    # load data from file
+    load_from_file()
+
+    # Start the GUI
+    root.mainloop()
+
 
 class Plan():
     def __init__(self, name, amount, start_date, end_date):
@@ -56,39 +127,6 @@ class Spending():
     def __str__(self):
         # return "Spending: {}, Amount: {}, Date: {}".format(self.name, self.amount, self.date) as YYYY-MM-DD 
         return "Spending: {}, Amount: {}, Date: {}".format(self.name, self.amount, self.date.strftime("%Y-%m-%d"))
-     
-
-class MainFrame(EasyFrame):
-
-    def __init__(self):
-        EasyFrame.__init__(self, title="Money Clip", height=800, width=880)
-
-        money_clip_label = self.addLabel("Money Clip", row=0, column=1,columnspan = 2)
-        money_clip_label["font"] = ("Arial", 40)
-        money_clip_label["foreground"] = "#385492"
-        money_clip_label["background"] = "#7FE7FE"
-        money_clip_label.place(x=350, y=10)
-        self.round_w = 0
-        self.round_1 = 0
-        self.background_image = PhotoImage(file="image/main_background_re.png")
-        background_label = Label(self, image=self.background_image)
-        background_label.place(relwidth=1, relheight=1)  # Cover the entire window
-        money_clip_label = Label(self, text="Money Clip", font=("Arial", 40), fg="#385492", bg="#7FE7FE")
-        money_clip_label.place(x=350, y=10)
-        
-
-    def start_create_plan(self):
-        create_plan_window = CreatePlan()
-        create_plan_window.grid(row=0, column=0, sticky ="NSEW")
-
-    def start_spend(self):
-        spend_window = Spend()
-        spend_window.grid(row=0, column=0, sticky ="NSEW")
-
-    def start_check_status(self):
-        check_status_window = CheckStatus()
-        check_status_window.grid(row=0, column=0, sticky ="NSEW")
-
 
 class CreatePlan(EasyFrame):
     def __init__(self):
@@ -99,11 +137,13 @@ class CreatePlan(EasyFrame):
         self.round_w = 0
         self.round_1 = 0
         # add TextBox in certer of the screen
-        self.addLabel(text="Make Your Plan", row=0, column=10, font=("Arial", 30) ).place(x=300, y=10)
+        self.addLabel(text="Make Your Plan", row=0, column=10, font=("Arial", 45), background = "#F7F5F7" ).place(x=300, y=10)
         # add buttons
-        self.addButton(text="Create New Plan", row=1, column=10, command=self.start_add_new_plan).place(x=100, y=100)
-        self.addButton(text="Change Plan", row=2, column=10, command=self.start_change_plan).place(x=100, y=200)
-        self.addButton(text="Finish", row=0, column=0, command=self.finish_create_plan).place(x=0, y=0)
+        self.addButton(text="Create New Plan", row=1, column=10,height= 12, width= 25, command=self.start_add_new_plan).place(x=120, y=150)
+        self.addButton(text="Change Plan", row=2, column=10, height= 12, width= 25, command=self.start_change_plan).place(x=500, y=150)
+        self.addButton(text="Back \nto Main", row=0, column=0, height=3, width=5, command=self.finish_create_plan).place(x=30, y=0)
+        
+        
 
     def start_add_new_plan(self):
         create_new_plan_window = CreateNewPlan()
@@ -299,10 +339,6 @@ class ChangePlan(EasyFrame):
         self.plan_end_date.setText("")
         messagebox.showinfo("Change Plan", "Cancel Change Plan Successfully!")
     
-
-    
-        
-
     def finish_change_plan(self):
         self.grid_forget()
 
@@ -317,7 +353,6 @@ class Spend(EasyFrame):
         self.round_1 = 0
 
         # add TextBox in certer of the screen
-        self.addLabel(text="Spend", row=0, column=10, font=("Arial", 30) ).place(x=300, y=10)
         self.addLabel(text="New Spending", row=0, column=10, font=("Arial", 30) ).place(x=350, y=70)
 
         # add labels and textboxs
@@ -343,11 +378,9 @@ class Spend(EasyFrame):
         # add Buttons
         self.addButton(text="Spend", row=0, column=10, command=self.spend).place(x=300, y=300)
         self.addButton(text="Cancel", row=0, column=10, command=self.cancel_spend).place(x=400, y=300)
-        self.addButton(text="Finish", row=0, column=0, command=self.finish_spend).place(x=0, y=0)
+        #self.addButton(text="Finish", row=0, column=0, command=self.finish_spend).place(x=0, y=0)
+        self.addButton(text="Back \nto Main", row=0, column=0, height=3, width=5, command=self.finish_spend).place(x=30, y=0)
 
-        # add finish button
-        finish_btn = tk.Button(self, text="Finish", command=self.finish_spend)
-        finish_btn.grid(row=0, column=0)
 
     def spend(self):
         # get the input
@@ -407,8 +440,7 @@ def start_spend():
     global spend_window
     spend_window = Spend()
     spend_window.grid(row=0, column=0, sticky ="NSEW")
-    finish_btn = tk.Button(spend_window, text="Back to main", command=finish_spend)
-    finish_btn.grid(row=0, column=0)
+
 
 class CheckStatus(EasyFrame):
     def __init__(self):
@@ -418,9 +450,11 @@ class CheckStatus(EasyFrame):
         background_label.place(x=0, y=0, relwidth=1, relheight=1)
         self.round_w = 0
         self.round_1 = 0
+        
+        self.addLabel(text="Report", row=0, column=10, font=("Arial", 30), background= "#F8F6F8" ).place(x=350, y=10)
 
         # add Plans drop down list
-        self.addLabel(text="Plans", row=0, column=10, font=("Arial", 15) ).place(x=100, y=100)
+        self.addLabel(text="Select Plan", row=3, column=10, font=("Arial", 20) , background="#F8F6F8" ).place(x=150, y=100)
         self.listbox = tk.Listbox(self, width=50, height=10, selectmode=tk.SINGLE)
         self.listbox.place(x=300, y=100)
         # insert plans into the listbox
@@ -429,13 +463,13 @@ class CheckStatus(EasyFrame):
             self.listbox.insert(i, plan.get_name())
 
         # add Summary report button
-        self.addButton(text="Summary Report", row=0, column=10, command=self.summary_report).place(x=300, y=300)
+        self.addButton(text="Summary Report", row=0, column=10, height=3, width= 10,command=self.summary_report).place(x=300, y=300)
         # add Spending report button
-        self.addButton(text="Spending Report", row=0, column=10, command=self.spending_report).place(x=500, y=300)
+        self.addButton(text="Spending Report", row=0, column=10, height=3, width= 10, command=self.spending_report).place(x=600, y=300)
 
         # add finish button
-        finish_btn = tk.Button(self, text="Finish", command=self.finish_check_status)
-        finish_btn.grid(row=0, column=0)
+        finish_btn = tk.Button(self, text="Back \nto Main", height=3, width=5, command=self.finish_check_status).place(x=30, y=0)
+
 
     def summary_report(self):
         # get the selected plan
@@ -531,46 +565,7 @@ def load_from_file():
             i += 1
 
 
-def main() :
-    # Create the main window
-    global root
-    global save_file_name
 
-    save_file_name = "plans.txt"
-    root = tk.Tk()
-    main_window = MainFrame()
-    main_window.grid(row=0, column=0)
-
-    # Setting the position of buttons on the screen
-    plan_button_img = PhotoImage(file="image/Botton1.png")
-    spend_button_img = PhotoImage(file="image/Botton2.png")
-    status_button_img = PhotoImage(file="image/Botton3.png")
-
-    # Create the buttons
-    plan_button = Button(main_window, image=plan_button_img, borderwidth=0, highlightthickness=0, command=start_create_plan)
-    spend_button = Button(main_window, image=spend_button_img, borderwidth=0, highlightthickness=0, command=start_spend)
-    status_button = Button(main_window, image=status_button_img, borderwidth=0, highlightthickness=0, command=start_check_status)
-
-    # Place the buttons on the screen
-    plan_button.place(x=83, y=13)
-    spend_button.place(x=500, y=206)
-    status_button.place(x=36, y=405)
-
-    # add finish button
-    finish_btn = tk.Button(main_window, text="Finish", command=finish_main_window)
-    finish_btn.grid(row=0, column=0)
-
-    global plans
-    plans = list()
-
-    # add test data
-    #add_test_data()
-
-    # load data from file
-    load_from_file()
-
-    # Start the GUI
-    root.mainloop()
 
 def add_test_data():
     plan1 = Plan("plan1", 100, "2023-01-01", "2023-01-31")

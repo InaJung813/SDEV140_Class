@@ -93,13 +93,15 @@ class EasyFrame(tkinter.Frame):
         return label
 
     def addButton(self, text, row, column,
-                  columnspan = 1, rowspan = 1,
+                  columnspan = 1, rowspan = 1, width=None, height=None, image=None,
                   command = lambda: None, sticky = N+W,
                   state = NORMAL):
+        
+
         """Creates and inserts a button at the row and column,
         and returns the button."""
         button = tkinter.Button(self, text = text,
-                                command = command, state = state)
+                                command = command, state = state, width=width, height=height, image=image)
         self.rowconfigure(row, weight = 1)
         self.columnconfigure(column, weight = 1)
         button.grid(row = row, column = column,
