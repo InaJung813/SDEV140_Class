@@ -261,17 +261,17 @@ class CreateNewPlan(EasyFrame):
         plans.append(new_plan)
 
         # clear the input
-        self.plan_name.setText("")
-        self.plan_amount.setText("")
-        self.plan_start_date.setText("")
-        self.plan_end_date.setText("")
+        self.plan_name.setText("Enter your plan name")
+        self.plan_amount.setText("Enter the plan budget amount")
+        self.plan_start_date.setText("YYYY-MM-DD")
+        self.plan_end_date.setText("YYYY-MM-DD")
         messagebox.showinfo("Create New Plan", "Create New Plan Successfully!")
 
     def cancel_new_plan(self):
-        self.plan_name.setText("")
-        self.plan_amount.setText("")
-        self.plan_start_date.setText("")
-        self.plan_end_date.setText("")
+        self.plan_name.setText("Enter your plan name")
+        self.plan_amount.setText("Enter the plan budget amount")
+        self.plan_start_date.setText("YYYY-MM-DD")
+        self.plan_end_date.setText("YYYY-MM-DD")
         messagebox.showinfo("Create New Plan", "Cancel New Plan Successfully!")
 
     def finish_add_new_plan(self):
