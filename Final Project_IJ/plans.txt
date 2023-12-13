@@ -3,17 +3,13 @@ Spending: spending1, Amount: 10.0, Date: 2023-01-01
 Spending: spending2, Amount: 20.0, Date: 2023-01-02
 Spending: spending3, Amount: 30.0, Date: 2023-01-03
 
-Plan: plan2, Amount: 200.0, Start Date: 2023-02-01, End Date: 2023-02-28
-Spending: spending4, Amount: 40.0, Date: 2023-02-01
-Spending: spending5, Amount: 50.0, Date: 2023-02-02
-Spending: spending6, Amount: 60.0, Date: 2023-02-03
+Plan: plan2, Amount: 10000.0, Start Date: 2023-01-01, End Date: 2023-12-31
+Spending: spending1, Amount: 1000.0, Date: 2023-01-01
 
-Plan: plan3, Amount: 300.0, Start Date: 2023-03-01, End Date: 2023-03-31
-Spending: spending7, Amount: 70.0, Date: 2023-03-01
-Spending: spending8, Amount: 80.0, Date: 2023-03-02
-Spending: spending9, Amount: 90.0, Date: 2023-03-03
+Plan: Plan3 Change, Amount: 300000.0, Start Date: 2023-01-01, End Date: 2024-01-01
+Spending: flex, Amount: 10000.0, Date: 2023-10-01
 
-Plan: test2, Amount: 300.0, Start Date: 2023-12-01, End Date: 2023-12-31
-
-Plan: test3, Amount: 33000.0, Start Date: 2024-01-02, End Date: 2024-12-31
+Plan: test for change, Amount: 50000.0, Start Date: 2023-12-01, End Date: 2025-12-31
+Spending: test for spending, Amount: 120.0, Date: 2024-01-01
+Spending: Test 2, Amount: 100.0, Date: 2023-12-31
 
