@@ -470,14 +470,25 @@ class Spend(EasyFrame):
         self.addLabel(text="Spending Name", row=0, column=10, font=("Arial", 15), background = "#FFF2CC" ).place(x=100, y=200)
         self.spending_name = self.addTextField(text="", row=0, column=10, width=40)
         self.spending_name.place(x=300, y=200)
+        self.spending_name.setText("Enter the spending details")
+        self.spending_name.bind("<FocusIn>", self.on_entry_click)
+        
         self.addLabel(text="Spending Amount", row=0, column=10, font=("Arial", 15), background = "#FFF2CC" ).place(x=100, y=250)
         self.spending_amount = self.addTextField(text="", row=0, column=10, width=40)
         self.spending_amount.place(x=300, y=250)
+        self.spending_amount.setText("Enter the spending amount")
+        self.spending_amount.bind("<FocusIn>", self.on_entry_click)
+        
         self.addLabel(text="Spending Date", row=0, column=10, font=("Arial", 15), background = "#FFF2CC" ).place(x=100, y=300)
         self.spending_date = self.addTextField(text="", row=0, column=10, width=40)
         self.spending_date.place(x=300, y=300)
-
-
+        self.spending_date.setText("YYYY-MM-DD")
+        self.spending_date.bind("<FocusIn>", self.on_entry_click)
+        
+        self.spending_name.bind("<FocusOut>", self.on_focusout)
+        self.spending_amount.bind("<FocusOut>", self.on_focusout)
+        self.spending_date.bind("<FocusOut>", self.on_focusout)
+    
      
         # add Buttons
         self.addButton(text="Save\nSpend", row=0, column=10, height=3, width= 5, command=self.spend).place(x=550, y=350)
@@ -486,7 +497,30 @@ class Spend(EasyFrame):
         # add finish button
         self.addButton(text="Back \nto Main", row=0, column=0, height=3, width=5, command=self.finish_spend).place(x=30, y=0)
       
-        
+    def on_entry_click(self, event):
+        #Event handler: executed when the user clicks on a text field.
+        default_taxt= {
+            self.spending_name : "Enter your plan name",
+            self.spending_amount: "Enter the spending amount",
+            self.spending_date: "YYYY-MM-DD",
+        }
+        current_text = event.widget.getText()
+        if current_text == "YYYY-MM-DD" or current_text == "Enter the spending details" or current_text == "Enter the spending amount":
+            event.widget.setText("")
+            event.widget["foreground"] = "gray"
+
+    def on_focusout(self, event):
+        #Event handler: executed when a text field loses focus.
+        if event.widget == self.spending_name and event.widget.getText() == "":
+            event.widget.setText("Enter the spending details")
+            event.widget["foreground"] = "grey"
+        elif event.widget == self.spending_amount and event.widget.getText() == "":
+            event.widget.setText("Enter the spending amount")
+            event.widget["foreground"] = "grey"
+        elif event.widget == self.spending_date and event.widget.getText() == "":
+            event.widget.setText("YYYY-MM-DD")
+            event.widget["foreground"] = "grey"
+    
     def spend(self):
         # get the input
         spending_name = self.spending_name.getText()
@@ -534,40 +568,21 @@ class Spend(EasyFrame):
         selected_plan.add_spendings(new_spending)
         
         # clear the input
-        self.spending_name.setText("")
-        self.spending_amount.setText("")
-        self.spending_date.setText("")
+        self.spending_name.setText("Enter the spending details")
+        self.spending_amount.setText("Enter the spending amount")
+        self.spending_date.setText("YYYY-MM-DD")
         messagebox.showinfo("Spend", "Spend Successfully!")
 
-    """
-        # Use the start and end dates directly if they are already datetime objects
-        plan_start_date = selected_plan.get_start_date()
-        plan_end_date = selected_plan.get_end_date()
-
-        # check if the spending date is in the plan
-        if not plan_start_date <= spending_date_check <= plan_end_date:
-            messagebox.showinfo("Spend", "Spending date should be in the plan!")
-            return
-                
-        # create new spending
-        new_spending = Spending(spending_name, spending_amount, spending_date)
-        selected_plan.add_spendings(new_spending)
-
-        # clear the input
-        self.spending_name.setText("")
-        self.spending_amount.setText("")
-        self.spending_date.setText("")
-        messagebox.showinfo("Spend", "Spend Save Successfully!")
-    """
 
     def cancel_spend(self):
-        self.spending_name.setText("")
-        self.spending_amount.setText("")
-        self.spending_date.setText("")
+        self.spending_name.setText("Enter the spending details")
+        self.spending_amount.setText("Enter the spending amount")
+        self.spending_date.setText("YYYY-MM-DD")
         messagebox.showinfo("Spend", "Cancel Successfully!")
 
     def finish_spend(self):
         self.grid_forget()    
+
 
 
 def start_spend():
