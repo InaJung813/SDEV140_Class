@@ -1,3 +1,4 @@
+from typing import Any
 from breezypythongui import EasyFrame
 import tkinter as tk
 from breezypythongui import EasyFrame
@@ -78,11 +79,10 @@ def main() :
 
 class Plan():
     def __init__(self, name, amount, start_date, end_date):
-        date_format = "%Y-%m-%d"
         self.name = str(name)
         self.amount = float(amount)
-        self.start_date = dt.strptime( start_date, date_format ) 
-        self.end_date = dt.strptime( end_date, date_format )
+        self.start_date = start_date
+        self.end_date = end_date
 
         self.spendings = list()
 
@@ -90,7 +90,7 @@ class Plan():
         return self.name
 
     def get_amount(self):
-        return self.amount
+        return float(self.amount)
 
     def get_start_date(self):
         return self.start_date
@@ -107,14 +107,28 @@ class Plan():
     def __str__(self):
         # return "Plan: {}, Amount: {}, Start Date: {}, End Date: {}".format(self.name, self.amount, self.start_date, self.end_date) as YYYY-MM-DD
         return "Plan: {}, Amount: {}, Start Date: {}, End Date: {}".format(self.name, self.amount, self.start_date.strftime("%Y-%m-%d"), self.end_date.strftime("%Y-%m-%d"))
+    
+    def __setattr__(self, name, value):
+        date_format = "%Y-%m-%d"
+        if name == "amount":
+            try:
+                value = float(value)
+            except ValueError:
+                raise ValueError("Amount must be a float")
+        elif name in ["start_date", "end_date"] and type(value) == str:  
+            try:
+                value = dt.strptime(value, date_format)
+            except ValueError:
+                raise ValueError("Date must be in format: " + date_format)
+        super().__setattr__(name, value)
+    
 
 class Spending():
     def __init__(self, name, amount, date):
-        date_format = "%Y-%m-%d"
         self.name = str(name)
         self.amount = float(amount)
-        self.date = dt.strptime( date, date_format )
-
+        self.date = date
+        
     def get_name(self):
         return self.name
 
@@ -127,6 +141,15 @@ class Spending():
     def __str__(self):
         # return "Spending: {}, Amount: {}, Date: {}".format(self.name, self.amount, self.date) as YYYY-MM-DD 
         return "Spending: {}, Amount: {}, Date: {}".format(self.name, self.amount, self.date.strftime("%Y-%m-%d"))
+    
+    def __setattr__(self, __name, __value):
+        date_format = "%Y-%m-%d"
+
+        if __name == "amount":
+            __value = float(__value)
+        elif __name == "date" and type(__value) == str :
+            __value = dt.strptime(__value, date_format)
+        super().__setattr__(__name, __value)            
 
 class CreatePlan(EasyFrame):
     def __init__(self):
@@ -143,8 +166,6 @@ class CreatePlan(EasyFrame):
         self.addButton(text="Change Plan", row=2, column=10, height= 12, width= 25, command=self.start_change_plan).place(x=500, y=150)
         self.addButton(text="Back \nto Main", row=0, column=0, height=3, width=5, command=self.finish_create_plan).place(x=30, y=0)
         
-        
-
     def start_add_new_plan(self):
         create_new_plan_window = CreateNewPlan()
         create_new_plan_window.grid(row=0, column=0, sticky ="NSEW")
@@ -173,7 +194,7 @@ class CreateNewPlan(EasyFrame):
         # add TextBox in certer of the screen
         self.addLabel(text="Create New Plan", row=0, column=10, font=("Arial", 45), background = "#F7F5F7" ).place(x=300, y=10)
 
-        # add labels and textboxs
+        # add labels and textboxs(and set the bind events)
         self.addLabel(text="Plan Name", row=0, column=10, font=("Arial", 15), background = "#F7F5F7" ).place(x=100, y=150)
         self.plan_name = self.addTextField(text="", row=0, column=10, width=40)
         self.plan_name.place(x=300, y=150)
@@ -228,7 +249,7 @@ class CreateNewPlan(EasyFrame):
             event.widget["foreground"] = "grey"
         elif (event.widget == self.plan_start_date or event.widget == self.plan_end_date) and event.widget.getText() == "":
             event.widget.setText("YYYY-MM-DD")
-            event.widget["foreground"] = "grey"
+            event.widget["foreground"] = "black"
             
     def create_new_plan(self):
         # get the input
@@ -276,6 +297,8 @@ class CreateNewPlan(EasyFrame):
 
     def finish_add_new_plan(self):
         self.grid_forget()
+        
+
 
 class ChangePlan(EasyFrame):
     def __init__(self):
@@ -287,36 +310,82 @@ class ChangePlan(EasyFrame):
         self.round_1 = 0
 
         # add TextBox in certer of the screen
-        self.addLabel(text="Change Plan", row=0, column=10, font=("Arial", 30) ).place(x=300, y=10)
-        self.addLabel(text="New Plan", row=0, column=10, font=("Arial", 30) ).place(x=350, y=70)
+        self.addLabel(text="Change Plan", row=0, column=10, font=("Arial", 30), background = "#F7F5F7").place(x=300, y=10)
 
-        # add labels and textboxs
-        self.addLabel(text="Plan Name", row=0, column=10, font=("Arial", 15) ).place(x=100, y=150)
-        self.plan_name = self.addTextField(text="", row=0, column=10, width=40)
-        self.plan_name.place(x=300, y=150)
-        self.addLabel(text="Budget Amount", row=0, column=10, font=("Arial", 15) ).place(x=100, y=200)
-        self.plan_amount = self.addTextField(text="", row=0, column=10, width=40)
-        self.plan_amount.place(x=300, y=200)
-        self.addLabel(text="Start Date", row=0, column=10, font=("Arial", 15) ).place(x=100, y=250)
-        self.plan_start_date = self.addTextField(text="", row=0, column=10, width=40)
-        self.plan_start_date.place(x=300, y=250)
-        self.addLabel(text="End Date", row=0, column=10, font=("Arial", 15) ).place(x=100, y=300)
-        self.plan_end_date = self.addTextField(text="", row=0, column=10, width=40)
-        self.plan_end_date.place(x=300, y=300)
-
-
-        # add Plans drop down list
-        self.listbox = tk.Listbox(self, width=50, height=10, selectmode=tk.SINGLE)
-        self.listbox.place(x=300, y=400)
-        # insert plans into the listbox
+        # add Plans list drop down list
+        self.addLabel(text="Plan List", row=0, column=10, font=("Arial", 15), background = "#F7F5F7").place(x=100, y=100)
+        self.addLabel(text="Select a Plan \nfor change information", row=0, column=10, font=("Arial", 12), background = "#F7F5F7", foreground = "gray").place(x=100, y=120)
+        self.listbox = tk.Listbox(self, width=50, height=5, selectmode=tk.SINGLE)
+        self.listbox.place(x=300, y=100)
+        # insert plans list into the listbox
         for i in range(len(plans)):
             plan = plans[i]
             self.listbox.insert(i, plan.get_name())
 
+        # add labels and textboxs(and set the bind events)
+        self.addLabel(text="Plan Name", row=0, column=10, font=("Arial", 15), background = "#F7F5F7").place(x=100, y=200)
+        self.plan_name = self.addTextField(text="", row=0, column=10, width=40)
+        self.plan_name.place(x=300, y=200)
+        self.plan_name.setText("Enter your plan name")
+        self.plan_name.bind("<FocusIn>", self.on_entry_click)
+        
+        self.addLabel(text="Budget Amount", row=0, column=10, font=("Arial", 15), background = "#F7F5F7").place(x=100, y=250)
+        self.plan_amount = self.addTextField(text="", row=0, column=10, width=40)
+        self.plan_amount.place(x=300, y=250)
+        self.plan_amount.setText("Enter the plan budget amount")
+        self.plan_amount.bind("<FocusIn>", self.on_entry_click)
+        
+        self.addLabel(text="Start Date", row=0, column=10, font=("Arial", 15), background = "#F7F5F7").place(x=100, y=300)
+        self.plan_start_date = self.addTextField(text="", row=0, column=10, width=40)
+        self.plan_start_date.place(x=300, y=300)
+        self.plan_start_date.setText("YYYY-MM-DD")
+        self.plan_start_date.bind("<FocusIn>", self.on_entry_click)
+        
+        self.addLabel(text="End Date", row=0, column=10, font=("Arial", 15), background = "#F7F5F7").place(x=100, y=350)
+        self.plan_end_date = self.addTextField(text="", row=0, column=10, width=40)
+        self.plan_end_date.place(x=300, y=350)
+        self.plan_end_date.setText("YYYY-MM-DD")
+        self.plan_end_date.bind("<FocusIn>", self.on_entry_click)
+
         # add Buttons
-        self.addButton(text="Change", row=0, column=10, command=self.change_plan).place(x=300, y=350)
-        self.addButton(text="Cancel", row=0, column=10, command=self.cancel_change_plan).place(x=400, y=350)
-        self.addButton(text="Finish", row=0, column=0, command=self.finish_change_plan).place(x=0, y=0)
+        self.addButton(text="Change", row=0, column=10, height=3, width= 5, command=self.change_plan).place(x=600, y=400)
+        self.addButton(text="Cancel", row=0, column=10, height=3, width= 5, command=self.cancel_change_plan).place(x=600, y=500)
+
+        # add finish button
+        self.addButton(text="Back \nto Main", row=0, column=0, height=3, width=5, command=self.finish_change_plan).place(x=30, y=0)
+        
+
+        self.plan_name.bind("<FocusOut>", self.on_focusout)
+        self.plan_amount.bind("<FocusOut>", self.on_focusout)
+        self.plan_start_date.bind("<FocusOut>", self.on_focusout)
+        self.plan_end_date.bind("<FocusOut>", self.on_focusout)
+
+    
+    def on_entry_click(self, event):
+        #Event handler: executed when the user clicks on a text field.
+        default_taxt= {
+            self.plan_name : "Enter your plan name",
+            self.plan_amount: "Enter the plan budget amount",
+            self.plan_start_date: "YYYY-MM-DD",
+            self.plan_end_date: "YYYY-MM-DD"
+        }
+        current_text = event.widget.getText()
+        if current_text == "YYYY-MM-DD" or current_text == "Enter your plan name" or current_text == "Enter the plan budget amount":
+            event.widget.setText("")
+            event.widget["foreground"] = "gray"
+
+    def on_focusout(self, event):
+        #Event handler: executed when a text field loses focus.
+        if event.widget == self.plan_name and event.widget.getText() == "":
+            event.widget.setText("Enter your plan name")
+            event.widget["foreground"] = "grey"
+        elif event.widget == self.plan_amount and event.widget.getText() == "":
+            event.widget.setText("Enter the plan budget amount")
+            event.widget["foreground"] = "grey"
+        elif (event.widget == self.plan_start_date or event.widget == self.plan_end_date) and event.widget.getText() == "":
+            event.widget.setText("YYYY-MM-DD")
+            event.widget["foreground"] = "grey"
+
 
     def change_plan(self):
         # get the input
@@ -359,61 +428,65 @@ class ChangePlan(EasyFrame):
         selected_plan.end_date = plan_end_date
 
         # clear the input
-        self.plan_name.setText("")
-        self.plan_amount.setText("")
-        self.plan_start_date.setText("")
-        self.plan_end_date.setText("")
+        self.plan_name.setText("Enter your plan name")
+        self.plan_amount.setText("Enter the plan budget amount")
+        self.plan_start_date.setText("YYYY-MM-DD")
+        self.plan_end_date.setText("YYYY-MM-DD")
         messagebox.showinfo("Change Plan", "Change Plan Successfully!")
 
     def cancel_change_plan(self):
-        self.plan_name.setText("")
-        self.plan_amount.setText("")
-        self.plan_start_date.setText("")
-        self.plan_end_date.setText("")
+        self.plan_name.setText("Enter your plan name")
+        self.plan_amount.setText("Enter the plan budget amount")
+        self.plan_start_date.setText("YYYY-MM-DD")
+        self.plan_end_date.setText("YYYY-MM-DD")
         messagebox.showinfo("Change Plan", "Cancel Change Plan Successfully!")
     
     def finish_change_plan(self):
         self.grid_forget()
 
-
 class Spend(EasyFrame):
     def __init__(self):
         EasyFrame.__init__(self, title="Money Clip", height=800, width=880)
-        self.background_image = PhotoImage(file="image/budget_back.png")
-        background_label = Label(self, image=self.background_image)
+        self.background_image_spend = PhotoImage(file="image/spend_back.png")
+        background_label = Label(self, image=self.background_image_spend)
         background_label.place(x=0, y=0, relwidth=1, relheight=1)
         self.round_w = 0
         self.round_1 = 0
 
         # add TextBox in certer of the screen
-        self.addLabel(text="New Spending", row=0, column=10, font=("Arial", 30) ).place(x=350, y=70)
-
-        # add labels and textboxs
-        self.addLabel(text="Spending Name", row=0, column=10, font=("Arial", 15) ).place(x=100, y=150)
-        self.spending_name = self.addTextField(text="", row=0, column=10, width=40)
-        self.spending_name.place(x=300, y=150)
-        self.addLabel(text="Spending Amount", row=0, column=10, font=("Arial", 15) ).place(x=100, y=200)
-        self.spending_amount = self.addTextField(text="", row=0, column=10, width=40)
-        self.spending_amount.place(x=300, y=200)
-        self.addLabel(text="Spending Date", row=0, column=10, font=("Arial", 15) ).place(x=100, y=250)
-        self.spending_date = self.addTextField(text="", row=0, column=10, width=40)
-        self.spending_date.place(x=300, y=250)
-
+        self.addLabel(text="New Spending", row=0, column=10, font=("Arial", 30), background = "#FFF2CC" ).place(x=350, y=10)
+        
         # add Plans drop down list
-        self.addLabel(text="Plans", row=0, column=10, font=("Arial", 15) ).place(x=100, y=100)
-        self.listbox = tk.Listbox(self, width=50, height=15, selectmode=tk.SINGLE)
-        self.listbox.place(x=300, y=400)
+        self.addLabel(text="Plans", row=0, column=10, font=("Arial", 15), background = "#FFF2CC" ).place(x=100, y=100)
+        self.addLabel(text="Select a Plan \nto enter spending", row=0, column=10, font=("Arial", 12), background = "#FFF2CC", foreground = "gray").place(x=100, y=120)
+        self.listbox = tk.Listbox(self, width=50, height=5, selectmode=tk.SINGLE)
+        self.listbox.place(x=300, y=100)
         # insert plans into the listbox
         for i in range(len(plans)):
             plan = plans[i]
             self.listbox.insert(i, plan.get_name())
+            
+        # add labels and textboxs
+        self.addLabel(text="Spending Name", row=0, column=10, font=("Arial", 15), background = "#FFF2CC" ).place(x=100, y=200)
+        self.spending_name = self.addTextField(text="", row=0, column=10, width=40)
+        self.spending_name.place(x=300, y=200)
+        self.addLabel(text="Spending Amount", row=0, column=10, font=("Arial", 15), background = "#FFF2CC" ).place(x=100, y=250)
+        self.spending_amount = self.addTextField(text="", row=0, column=10, width=40)
+        self.spending_amount.place(x=300, y=250)
+        self.addLabel(text="Spending Date", row=0, column=10, font=("Arial", 15), background = "#FFF2CC" ).place(x=100, y=300)
+        self.spending_date = self.addTextField(text="", row=0, column=10, width=40)
+        self.spending_date.place(x=300, y=300)
 
+
+     
         # add Buttons
-        self.addButton(text="Spend", row=0, column=10, command=self.spend).place(x=300, y=300)
-        self.addButton(text="Cancel", row=0, column=10, command=self.cancel_spend).place(x=400, y=300)
+        self.addButton(text="Save\nSpend", row=0, column=10, height=3, width= 5, command=self.spend).place(x=550, y=350)
+        self.addButton(text="Cancel", row=0, column=10, height=3, width= 5, command=self.cancel_spend).place(x=550, y=430)
+        
+        # add finish button
         self.addButton(text="Back \nto Main", row=0, column=0, height=3, width=5, command=self.finish_spend).place(x=30, y=0)
-
-
+      
+        
     def spend(self):
         # get the input
         spending_name = self.spending_name.getText()
@@ -442,9 +515,37 @@ class Spend(EasyFrame):
             return
         selected_plan_index = selected_plan_index[0]
         selected_plan = plans[selected_plan_index]
+        
+        # get the selected plan
+        selected_plan_index = self.listbox.curselection()
+        if len(selected_plan_index) == 0:
+            messagebox.showinfo("Spend", "Please select a plan!")
+            return
+        selected_plan_index = selected_plan_index[0]
+        selected_plan = plans[selected_plan_index]
 
         # check if the spending date is in the plan
         if not selected_plan.get_start_date() <= spending_date_check <= selected_plan.get_end_date():
+            messagebox.showinfo("Spend", "Spending date should be in the plan!")
+            return
+                
+        # create new spending
+        new_spending = Spending(spending_name, spending_amount, spending_date)
+        selected_plan.add_spendings(new_spending)
+        
+        # clear the input
+        self.spending_name.setText("")
+        self.spending_amount.setText("")
+        self.spending_date.setText("")
+        messagebox.showinfo("Spend", "Spend Successfully!")
+
+    """
+        # Use the start and end dates directly if they are already datetime objects
+        plan_start_date = selected_plan.get_start_date()
+        plan_end_date = selected_plan.get_end_date()
+
+        # check if the spending date is in the plan
+        if not plan_start_date <= spending_date_check <= plan_end_date:
             messagebox.showinfo("Spend", "Spending date should be in the plan!")
             return
                 
@@ -456,7 +557,8 @@ class Spend(EasyFrame):
         self.spending_name.setText("")
         self.spending_amount.setText("")
         self.spending_date.setText("")
-        messagebox.showinfo("Spend", "Spend Successfully!")
+        messagebox.showinfo("Spend", "Spend Save Successfully!")
+    """
 
     def cancel_spend(self):
         self.spending_name.setText("")
@@ -477,16 +579,16 @@ def start_spend():
 class CheckStatus(EasyFrame):
     def __init__(self):
         EasyFrame.__init__(self, title="Money Clip", height=800, width=880)
-        self.background_image = PhotoImage(file="image/budget_back.png")
+        self.background_image = PhotoImage(file="image/report_back.png")
         background_label = Label(self, image=self.background_image)
         background_label.place(x=0, y=0, relwidth=1, relheight=1)
         self.round_w = 0
         self.round_1 = 0
         
-        self.addLabel(text="Report", row=0, column=10, font=("Arial", 30), background= "#F8F6F8" ).place(x=350, y=10)
+        self.addLabel(text="Report", row=0, column=10, font=("Arial", 30), background= "#FBE5D6" ).place(x=350, y=10)
 
         # add Plans drop down list
-        self.addLabel(text="Select Plan", row=3, column=10, font=("Arial", 20) , background="#F8F6F8" ).place(x=150, y=100)
+        self.addLabel(text="Select Plan", row=3, column=10, font=("Arial", 20) , background="#FBE5D6" ).place(x=150, y=100)
         self.listbox = tk.Listbox(self, width=50, height=10, selectmode=tk.SINGLE)
         self.listbox.place(x=300, y=100)
         # insert plans into the listbox
