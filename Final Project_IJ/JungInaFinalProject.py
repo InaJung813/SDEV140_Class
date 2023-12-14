@@ -758,6 +758,7 @@ def load_from_file():
                 i -= 1
             i += 1
 
+"""
 # test data
 def add_test_data():
     plan1 = Plan("plan1", 100, "2023-01-01", "2023-01-31")
@@ -793,6 +794,7 @@ def add_test_data():
     plans.append(plan1)
     plans.append(plan2)
     plans.append(plan3)
+    """
 
 if __name__ == "__main__":
     main()
