@@ -516,6 +516,14 @@ class Spend(EasyFrame):
         if spending_name == "" or spending_amount == "" or spending_date == "":
             messagebox.showinfo("Spend", "Please fill in all the blanks!")
             return
+        
+        # check if the spending amount is a valid float
+        try:
+            spending_amount_float = float(spending_amount)
+        except ValueError:
+            messagebox.showinfo("Spend", "Please enter a valid number for the spending amount!")
+            return
+        
         # check if the date is valid
         date_format = "%Y-%m-%d"
         try:
