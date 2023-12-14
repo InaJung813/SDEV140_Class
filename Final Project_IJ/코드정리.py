@@ -5,78 +5,126 @@ from breezypythongui import EasyFrame
 from tkinter import PhotoImage, Label, Button, StringVar, DoubleVar, messagebox
 from datetime import datetime as dt
 
-# Setting the background, buttons for the main page
-class MainFrame(EasyFrame):
+class MoneyClipApp(EasyFrame):
+    """
+    This class represents the entire application. It includes the main window
+    setup, loading of data, and creation of buttons to navigate between different
+    functionalities of the app.
+    """
 
-    def __init__(self):
+    def __init__(self, root):
+        self.root = root
+        # Initialize the main frame
         EasyFrame.__init__(self, title="Money Clip", height=800, width=880)
         
-        # Configuring menu buttons and setting their background
-        money_clip_label = self.addLabel("Money Clip", row=0, column=1,columnspan = 2)
+        # Configure the main label
+        self.configure_main_label()
+        
+        # Load the background image
+        self.configure_background()
+
+        # Initialize global variables
+        self.plans = list()
+        self.save_file_name = "plans.txt"
+
+        # Load data from file
+        self.load_from_file()
+
+        # Create navigation buttons
+        self.create_navigation_buttons()
+
+    def configure_main_label(self):
+        # Create and place the main label
+        money_clip_label = self.addLabel("Money Clip", row=0, column=1, columnspan=2)
         money_clip_label["font"] = ("Arial", 45)
         money_clip_label["foreground"] = "#385492"
         money_clip_label["background"] = "#7FE7FE"
         money_clip_label.place(x=350, y=10)
-        self.round_w = 0
-        self.round_1 = 0
+
+    def configure_background(self):
+        # Load and set the background image
         self.background_image = PhotoImage(file="image/main_background_re.png")
         background_label = Label(self, image=self.background_image)
         background_label.place(relwidth=1, relheight=1)  # Cover the entire window
-        money_clip_label = Label(self, text="Money Clip", font=("Arial", 40), fg="#385492", bg="#7FE7FE")
-        money_clip_label.place(x=350, y=10)
-        
-     # Linking each button to its respective function/module
+
+    def create_navigation_buttons(self):
+        # Create and place buttons for different sections of the app
+        plan_button_img = PhotoImage(file="image/Botton1.png")
+        spend_button_img = PhotoImage(file="image/Botton2.png")
+        status_button_img = PhotoImage(file="image/Botton3.png")
+
+        plan_button = Button(self, image=plan_button_img, borderwidth=0, highlightthickness=0, command=self.start_create_plan)
+        spend_button = Button(self, image=spend_button_img, borderwidth=0, highlightthickness=0, command=self.start_spend)
+        status_button = Button(self, image=status_button_img, borderwidth=0, highlightthickness=0, command=self.start_check_status)
+
+        plan_button.place(x=83, y=13)
+        spend_button.place(x=492, y=219)
+        status_button.place(x=52, y=413)
+
+        # Add a finish button
+        finish_btn = tk.Button(self, text="Finish", height=3, width=5, command=self.finish_main_window, fg="#385492", bg="#7FE7FE")
+        finish_btn.place(x=750, y=0)
+
     def start_create_plan(self):
+        # Open the CreatePlan window
         create_plan_window = CreatePlan()
-        create_plan_window.grid(row=0, column=0, sticky ="NSEW")
+        create_plan_window.grid(row=0, column=0, sticky="NSEW")
 
     def start_spend(self):
+        # Open the Spend window
         spend_window = Spend()
-        spend_window.grid(row=0, column=0, sticky ="NSEW")
+        spend_window.grid(row=0, column=0, sticky="NSEW")
 
     def start_check_status(self):
+        # Open the CheckStatus window
         check_status_window = CheckStatus()
-        check_status_window.grid(row=0, column=0, sticky ="NSEW")
-        
-# Create the main window        
-def main() :
-    global root
-    global save_file_name
+        check_status_window.grid(row=0, column=0, sticky="NSEW")
 
-    save_file_name = "plans.txt"
-    root = tk.Tk()
-    main_window = MainFrame()
-    main_window.grid(row=0, column=0)
-
-    # Setting the position of buttons on the screen
-    plan_button_img = PhotoImage(file="image/Botton1.png")
-    spend_button_img = PhotoImage(file="image/Botton2.png")
-    status_button_img = PhotoImage(file="image/Botton3.png")
-
-    # Create the buttons
-    plan_button = Button(main_window, image=plan_button_img, borderwidth=0, highlightthickness=0, command=start_create_plan)
-    spend_button = Button(main_window, image=spend_button_img, borderwidth=0, highlightthickness=0, command=start_spend)
-    status_button = Button(main_window, image=status_button_img, borderwidth=0, highlightthickness=0, command=start_check_status)
-
-    # Place the buttons on the screen
-    plan_button.place(x=83, y=13)
-    spend_button.place(x=492, y=219)
-    status_button.place(x=52, y=413)
-
-    # add finish button
-    finish_btn = tk.Button(main_window, text="Finish", height= 3, width= 5 , command=finish_main_window, fg="#385492", bg="#7FE7FE")
-    finish_btn.place(x=750, y=0)
-
-    global plans
-    plans = list()
-
-    # load data from file
-    load_from_file()
-
-    # Start the GUI
-    root.mainloop()
+    def finish_main_window(self):
+        # Save data to file and close the app
+        self.save_to_file()
+        self.root.destroy()
 
 
+    def load_from_file(self):
+        # Loads data from a specified file.
+        with open(self.save_file_name, "r") as f:
+            lines = f.readlines()
+            i = 0
+            while i < len(lines):
+                line = lines[i]
+                if line.startswith("Plan"):
+                    plan_name = line.split(",")[0].split(":")[1].strip()
+                    plan_amount = line.split(",")[1].split(":")[1].strip()
+                    plan_start_date = line.split(",")[2].split(":")[1].strip()
+                    plan_end_date = line.split(",")[3].split(":")[1].strip()
+                    print( f"plan_name: {plan_name}, plan_amount: {plan_amount}, plan_start_date: {plan_start_date}, plan_end_date: {plan_end_date}")
+                    new_plan = Plan(plan_name, plan_amount, plan_start_date, plan_end_date)
+                    self.plans.append(new_plan)
+                    i += 1
+                    line = lines[i]
+                    while line.startswith("Spending"):
+                        spending_name = line.split(",")[0].split(":")[1].strip()
+                        spending_amount = line.split(",")[1].split(":")[1].strip()
+                        spending_date = line.split(",")[2].split(":")[1].strip()
+                        new_spending = Spending(spending_name, spending_amount, spending_date)
+                        new_plan.add_spendings(new_spending)
+                        i += 1
+                        line = lines[i]
+                    i -= 1
+                i += 1
+
+    def save_to_file(self):
+        # Saves current data to a specified file.
+        with open(self.save_file_name, "w") as f:
+            for plan in self.plans:
+                f.write(f"Plan: {plan.name}, Amount: {plan.amount}, Start Date: {plan.start_date}, End Date: {plan.end_date}\n")
+                for spending in plan.get_spendings():
+                    f.write(f"Spending: {spending.name}, Amount: {spending.amount}, Date: {spending.date}\n")
+                f.write("\n")
+
+    
+# Class for main budget part window 
 class CreatePlan(EasyFrame):
     def __init__(self):
         EasyFrame.__init__(self, title="Money Clip", height=800, width=880)
@@ -103,11 +151,7 @@ class CreatePlan(EasyFrame):
     def finish_create_plan(self):
         self.grid_forget()
 
-def start_create_plan():
-    global create_plan_window
-    create_plan_window = CreatePlan()
-    create_plan_window.grid(row=0, column=0, sticky ="NSEW")
-    
+# Class for budget management
 class Plan():
     def __init__(self, name, amount, start_date, end_date):
         self.name = str(name)
@@ -153,6 +197,12 @@ class Plan():
                 raise ValueError("Date must be in format: " + date_format)
         super().__setattr__(name, value)
 
+def start_create_plan():
+    global create_plan_window
+    create_plan_window = CreatePlan()
+    create_plan_window.grid(row=0, column=0, sticky ="NSEW")
+
+# Class for new plan setup
 class CreateNewPlan(EasyFrame):
     def __init__(self):
         EasyFrame.__init__(self, title="Money Clip", height=800, width=880)
@@ -220,7 +270,7 @@ class CreateNewPlan(EasyFrame):
             event.widget["foreground"] = "grey"
         elif (event.widget == self.plan_start_date or event.widget == self.plan_end_date) and event.widget.getText() == "":
             event.widget.setText("YYYY-MM-DD")
-            event.widget["foreground"] = "grey"
+            event.widget["foreground"] = "black"
             
     def create_new_plan(self):
         # get the input
@@ -270,7 +320,7 @@ class CreateNewPlan(EasyFrame):
         self.grid_forget()
         
 
-
+# Class for budget(plan) modify
 class ChangePlan(EasyFrame):
     def __init__(self):
         EasyFrame.__init__(self, title="Money Clip", height=800, width=880)
@@ -413,9 +463,9 @@ class ChangePlan(EasyFrame):
         messagebox.showinfo("Change Plan", "Cancel Change Plan Successfully!")
     
     def finish_change_plan(self):
-        self.grid_forget()
-        
+        self.grid_forget()    
 
+# Class for spending window
 class Spend(EasyFrame):
     def __init__(self):
         EasyFrame.__init__(self, title="Money Clip", height=800, width=880)
@@ -554,7 +604,14 @@ class Spend(EasyFrame):
 
     def finish_spend(self):
         self.grid_forget()    
-        
+
+
+
+def start_spend():
+    global spend_window
+    spend_window = Spend()
+    spend_window.grid(row=0, column=0, sticky ="NSEW")
+
 class Spending():
     def __init__(self, name, amount, date):
         self.name = str(name)
@@ -581,15 +638,10 @@ class Spending():
             __value = float(__value)
         elif __name == "date" and type(__value) == str :
             __value = dt.strptime(__value, date_format)
-        super().__setattr__(__name, __value) 
-
-
-def start_spend():
-    global spend_window
-    spend_window = Spend()
-    spend_window.grid(row=0, column=0, sticky ="NSEW")
-
-
+        super().__setattr__(__name, __value)       
+        
+        
+# Class for Report
 class CheckStatus(EasyFrame):
     def __init__(self):
         EasyFrame.__init__(self, title="Money Clip", height=800, width=880)
@@ -685,6 +737,7 @@ def save_to_file():
                 f.write(str(spending) + "\n")
             f.write("\n")
 
+# Save and load data form file
 def load_from_file():
     with open(save_file_name, "r") as f:
         lines = f.readlines()
@@ -714,7 +767,7 @@ def load_from_file():
 
 
 
-
+# Test data for test
 def add_test_data():
     plan1 = Plan("plan1", 100, "2023-01-01", "2023-01-31")
 
@@ -752,6 +805,8 @@ def add_test_data():
 
 
 if __name__ == "__main__":
-    main()  
+    root = tk.Tk()
+    app = MoneyClipApp(root)
+    app.mainloop()
 
     

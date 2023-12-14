@@ -9,7 +9,9 @@ Spending: spending1, Amount: 1000.0, Date: 2023-01-01
 Plan: Plan3 Change, Amount: 300000.0, Start Date: 2023-01-01, End Date: 2024-01-01
 Spending: flex, Amount: 10000.0, Date: 2023-10-01
 
-Plan: test for change, Amount: 50000.0, Start Date: 2023-12-01, End Date: 2025-12-31
+Plan: Test, Amount: 10000.0, Start Date: 2023-10-01, End Date: 2024-10-31
 Spending: test for spending, Amount: 120.0, Date: 2024-01-01
 Spending: Test 2, Amount: 100.0, Date: 2023-12-31
+Spending: test 11, Amount: 2000.0, Date: 2024-01-01
+Spending: test final, Amount: 1111.0, Date: 2024-02-01
 
