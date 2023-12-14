@@ -95,7 +95,7 @@ class CreatePlan(EasyFrame):
         # Adding buttons for creating a new plan, changing an existing plan, and going back to the main menu
         self.addButton(text="Create New Plan", row=1, column=10,height= 12, width= 25, command=self.start_add_new_plan).place(x=120, y=150)
         self.addButton(text="Change Plan", row=2, column=10, height= 12, width= 25, command=self.start_change_plan).place(x=500, y=150)
-        self.addButton(text="Back \nto Main", row=0, column=0, height=3, width=5, command=self.finish_create_plan).place(x=30, y=0)
+        self.addButton(text="Back \nto Plan", row=0, column=0, height=3, width=5, command=self.finish_create_plan).place(x=30, y=0)
         
     # Functions to handle button clicks: to open windows for adding a new plan, changing an existing plan, and closing this window    
     def start_add_new_plan(self):
@@ -207,7 +207,7 @@ class CreateNewPlan(EasyFrame):
         # Adding buttons to create, cancel a plan, and return to the main menu
         self.addButton(text="Create", row=0, column=10, height= 3, width= 5 ,command=self.create_new_plan).place(x=300, y=350)
         self.addButton(text="Cancel", row=0, column=10, height= 3, width= 5 ,command=self.cancel_new_plan).place(x=500, y=350)
-        self.addButton(text="Back \nto Main", row=0, column=0, height=3, width=5, command=self.finish_add_new_plan).place(x=30, y=0)
+        self.addButton(text="Back", row=0, column=0, height=3, width=5, command=self.finish_add_new_plan).place(x=30, y=0)
 
         self.plan_name.bind("<FocusOut>", self.on_focusout)
         self.plan_amount.bind("<FocusOut>", self.on_focusout)
@@ -345,7 +345,7 @@ class ChangePlan(EasyFrame):
         # Add buttons for changing plan details, canceling changes, and returning to the main menu
         self.addButton(text="Change", row=0, column=10, height=3, width= 5, command=self.change_plan).place(x=600, y=400)
         self.addButton(text="Cancel", row=0, column=10, height=3, width= 5, command=self.cancel_change_plan).place(x=600, y=500)
-        self.addButton(text="Back \nto Main", row=0, column=0, height=3, width=5, command=self.finish_change_plan).place(x=30, y=0)
+        self.addButton(text="Back", row=0, column=0, height=3, width=5, command=self.finish_change_plan).place(x=30, y=0)
         
 
         self.plan_name.bind("<FocusOut>", self.on_focusout)
