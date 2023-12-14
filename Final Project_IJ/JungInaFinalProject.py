@@ -251,7 +251,7 @@ class CreateNewPlan(EasyFrame):
         try:
             plan_amount = float(plan_amount)
         except ValueError:
-            messagebox.showinfo("Spend", "Please enter a valid number for the Budget amount!")
+            messagebox.showinfo("Spend", "Please enter a valid number for the  amount!")
             return
     
         # check if the date is valid
@@ -288,6 +288,7 @@ class CreateNewPlan(EasyFrame):
         self.plan_end_date.setText("YYYY-MM-DD")
         messagebox.showinfo("Create New Plan", "Cancel New Plan Successfully!")
 
+    # Closing the window
     def finish_add_new_plan(self):
         self.grid_forget()
         
@@ -589,6 +590,7 @@ class Spend(EasyFrame):
         self.spending_date.setText("YYYY-MM-DD")
         messagebox.showinfo("Spend", "Cancel Successfully!")
 
+    # Closing the window
     def finish_spend(self):
         self.grid_forget()    
 
@@ -704,6 +706,7 @@ class CheckStatus(EasyFrame):
         spending_details += "Total Spending: {}".format(total_spending)
         messagebox.showinfo("Spending Report", spending_details)
 
+    # Closing the window
     def finish_check_status(self):
         self.grid_forget()
 
@@ -718,6 +721,7 @@ def finish_main_window():
     save_to_file()
     root.destroy()
 
+# Save data to file
 def save_to_file():
     with open(save_file_name, "w") as f:
         for plan in plans:
@@ -726,6 +730,7 @@ def save_to_file():
                 f.write(str(spending) + "\n")
             f.write("\n")
 
+# Load data from file
 def load_from_file():
     with open(save_file_name, "r") as f:
         lines = f.readlines()
