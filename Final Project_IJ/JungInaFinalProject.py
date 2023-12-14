@@ -2,7 +2,7 @@ from typing import Any
 from breezypythongui import EasyFrame
 import tkinter as tk
 from breezypythongui import EasyFrame
-from tkinter import PhotoImage, Label, Button, StringVar, DoubleVar, messagebox
+from tkinter import PhotoImage, Label, Button, messagebox
 from datetime import datetime as dt
 
 # Main frame of the application, setting up the UI elements
@@ -246,6 +246,14 @@ class CreateNewPlan(EasyFrame):
         if plan_name == "" or plan_amount == "" or plan_start_date == "" or plan_end_date == "":
             messagebox.showinfo("Create New Plan", "Please fill in all the blanks!")
             return
+        
+        # check if the plan amount is a valid float
+        try:
+            plan_amount = float(plan_amount)
+        except ValueError:
+            messagebox.showinfo("Spend", "Please enter a valid number for the Budget amount!")
+            return
+    
         # check if the date is valid
         date_format = "%Y-%m-%d"
         try:
@@ -382,6 +390,14 @@ class ChangePlan(EasyFrame):
         if plan_name == "" or plan_amount == "" or plan_start_date == "" or plan_end_date == "":
             messagebox.showinfo("Change Plan", "Please fill in all the blanks!")
             return
+        
+        # check if the plan amount is a valid float
+        try:
+            plan_amount = float(plan_amount)
+        except ValueError:
+            messagebox.showinfo("Spend", "Please enter a valid number for the Budget amount!")
+            return
+        
         # check if the date is valid
         date_format = "%Y-%m-%d"
         try:
